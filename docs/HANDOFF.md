@@ -39,8 +39,9 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 
 ## Current state
 
-- Repo scaffolded, committed and pushed to GitHub (`main`). It configured, built, and passed all 3 tests
-  on Linux. It has **not** yet been built on Thomas's Windows PC.
+- Repo scaffolded, committed and pushed to GitHub (`main`). Cloned on Thomas's
+  Windows PC at `%USERPROFILE%\Projects\shortwave`; Debug build there has zero
+  warnings and all 3 tests pass (2026-10-19).
 - The source code is still the template's pass-through processor and editor.
 - Known harmless warning (GCC only): `processBlock(AudioBuffer<double>&)` hidden
   — comes from the template's processor, not seen on MSVC/clang-cl.
@@ -50,12 +51,11 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 1. ~~Get the code onto GitHub~~ — done: pushed to github.com/tgiaimo/shortwave
    (branch `main`). Clone it with `git clone --recurse-submodules
    https://github.com/tgiaimo/shortwave.git`.
-2. **Fetch dependencies**: `git submodule update --init --recursive`
-   (JUCE, cmake-includes, melatonin_inspector).
-3. **Install the toolchain** (docs/SETUP-WINDOWS.md step 1): Visual Studio 2026
-   with the C++ workload, CMake 4.2+, Git, Reaper.
-4. **First build on Windows**: `cmake -B Builds -G "Visual Studio 18 2026"`,
-   build Debug, run tests. Fix anything Windows-specific that shows up.
+2. ~~Fetch dependencies~~ — done (cloned with `--recurse-submodules`).
+3. ~~Install the toolchain~~ — done: VS Community 2026 18.11, CMake 4.4.4,
+   Git 2.55, Reaper 7.82.
+4. ~~First build on Windows~~ — done: Debug build, zero warnings, 3/3 tests
+   pass. Nothing Windows-specific needed fixing.
 5. Point Reaper and Ableton at `%USERPROFILE%\VST3-Dev`, save
    `dev/ShortwaveTest.rpp`, re-run cmake, confirm F5 opens Reaper.
 6. Check the first GitHub Actions run passes.

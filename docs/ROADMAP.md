@@ -92,7 +92,7 @@ the phase's milestone works.
 Milestone: a plugin with one gain knob loads in Reaper, and a breakpoint in
 `processBlock` stops the debugger.
 
-- [ ] Install toolchain (see SETUP-WINDOWS.md step 1)
+- [x] Install toolchain (see SETUP-WINDOWS.md step 1)
 - [x] Create repo from Pamplejuce, rename the plugin, first commit
 - [x] Push to GitHub (github.com/tgiaimo/shortwave)
 - [ ] Build Standalone + VST3 on the Windows PC; open in AudioPluginHost
@@ -181,6 +181,7 @@ Newest first. Add a row after each work session.
 
 | Date | Phase | What happened |
 | --- | --- | --- |
+| 2026-10-19 | 0 | Moved to Claude Code. Installed VS Community 2026 (18.11, MSVC 19.51), CMake 4.4.4, Git 2.55, Reaper 7.82 via winget. Cloned to `%USERPROFILE%\Projects\shortwave` with submodules. First Windows Debug build: VST3 + Standalone built with zero warnings, VST3 copied to `VST3-Dev`, all 3 tests pass. `SHORTWAVE_DEBUG_HOST` found Reaper. Not yet opened in a host. |
 | 2026-10-19 | 0 | Repo scaffolded from Pamplejuce (JUCE 9.0.5): renamed to Shortwave, VST3 + Standalone, VST3-Dev copy folder, F5-launches-Reaper debugging, Windows-only CI, setup guide. Built and all 3 tests passed (verified on Linux). Pushed to GitHub. |
 | 2026-10-19 | — | Roadmap drafted; Windows + Ableton confirmed |
 
