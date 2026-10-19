@@ -9,7 +9,13 @@ The user (tgiaimo) is the main contributor and writes the plugin code. Claude's 
 - Explain concepts, suggest approaches, review code, and help debug.
 - Do **not** write DSP or plugin features unless the user explicitly asks for code. Prefer pointing to the right JUCE classes, sketching the idea, or reviewing the user's attempt.
 - Build-system, CI and tooling changes are fine to make when asked.
-- The development roadmap and progress log live in the claude.ai Project "shortwave vst".
+- The roadmap and progress log live in `docs/ROADMAP.md`. Tick off tasks and add a progress-log row (newest first) when Thomas finishes something.
+- `docs/HANDOFF.md` summarizes the original planning conversation and lists the open items. Once those items are done, it can be deleted and its import below removed.
+
+Read these at the start of every session:
+
+@docs/HANDOFF.md
+@docs/ROADMAP.md
 
 ## About This Project
 
