@@ -39,8 +39,7 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 
 ## Current state
 
-- Repo scaffolded and committed as one commit ("Set up Shortwave plugin project
-  from the Pamplejuce template"). It configured, built, and passed all 3 tests
+- Repo scaffolded, committed and pushed to GitHub (`main`). It configured, built, and passed all 3 tests
   on Linux. It has **not** yet been built on Thomas's Windows PC.
 - The source code is still the template's pass-through processor and editor.
 - Known harmless warning (GCC only): `processBlock(AudioBuffer<double>&)` hidden
@@ -48,10 +47,9 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 
 ## Open items, in order
 
-1. **Get the code onto GitHub.** The repo github.com/tgiaimo/shortwave exists
-   (public, was empty). If this folder came from the zip, push it:
-   `git remote set-url origin https://github.com/tgiaimo/shortwave.git` then
-   `git push -u origin main`. If GitHub already has the commit, just clone it.
+1. ~~Get the code onto GitHub~~ — done: pushed to github.com/tgiaimo/shortwave
+   (branch `main`). Clone it with `git clone --recurse-submodules
+   https://github.com/tgiaimo/shortwave.git`.
 2. **Fetch dependencies**: `git submodule update --init --recursive`
    (JUCE, cmake-includes, melatonin_inspector).
 3. **Install the toolchain** (docs/SETUP-WINDOWS.md step 1): Visual Studio 2026

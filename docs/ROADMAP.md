@@ -94,7 +94,7 @@ Milestone: a plugin with one gain knob loads in Reaper, and a breakpoint in
 
 - [ ] Install toolchain (see SETUP-WINDOWS.md step 1)
 - [x] Create repo from Pamplejuce, rename the plugin, first commit
-- [ ] Push to GitHub (github.com/tgiaimo/shortwave)
+- [x] Push to GitHub (github.com/tgiaimo/shortwave)
 - [ ] Build Standalone + VST3 on the Windows PC; open in AudioPluginHost
 - [ ] Wire Loop 2: save `dev/ShortwaveTest.rpp`, F5 launches Reaper
 - [ ] Add one gain parameter and knob (Thomas writes this)
@@ -181,7 +181,7 @@ Newest first. Add a row after each work session.
 
 | Date | Phase | What happened |
 | --- | --- | --- |
-| 2026-10-19 | 0 | Repo scaffolded from Pamplejuce (JUCE 9.0.5): renamed to Shortwave, VST3 + Standalone, VST3-Dev copy folder, F5-launches-Reaper debugging, Windows-only CI, setup guide. Built and all 3 tests passed (verified on Linux). Not yet pushed to GitHub. |
+| 2026-10-19 | 0 | Repo scaffolded from Pamplejuce (JUCE 9.0.5): renamed to Shortwave, VST3 + Standalone, VST3-Dev copy folder, F5-launches-Reaper debugging, Windows-only CI, setup guide. Built and all 3 tests passed (verified on Linux). Pushed to GitHub. |
 | 2026-10-19 | — | Roadmap drafted; Windows + Ableton confirmed |
 
 ## Parking lot
