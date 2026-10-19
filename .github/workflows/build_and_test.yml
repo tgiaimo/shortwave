@@ -1,0 +1,83 @@
+# Windows-only CI for Shortwave: build, run tests, validate with pluginval,
+# and upload the VST3 + Standalone as a downloadable artifact.
+# The full Pamplejuce workflow (macOS, Linux, installers, code signing) can be
+# restored from https://github.com/sudara/pamplejuce when we reach Phase 6.
+
+name: Build and test
+
+on:
+  workflow_dispatch: # run a build from the GitHub Actions tab
+  push:
+  pull_request:
+
+# When pushing new commits, cancel any running builds on that branch
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  BUILD_TYPE: Release
+  BUILD_DIR: Builds
+  SCCACHE_GHA_ENABLED: true
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  windows:
+    name: Windows
+    runs-on: windows-latest
+
+    steps:
+      # MSVC toolchain + developer command prompt
+      - uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Install Ninja
+        run: choco install ninja
+
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Cache the build
+        uses: mozilla-actions/sccache-action@v0.0.11
+
+      - name: Configure
+        run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache .
+
+      - name: Build
+        run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }}
+
+      - name: Tests and benchmarks
+        working-directory: ${{ env.BUILD_DIR }}
+        run: ctest --verbose --output-on-failure
+
+      - name: Read in .env from CMake # see cmake/GitHubENV.cmake
+        run: |
+          cat .env
+          cat .env >> $GITHUB_ENV
+
+      - name: Set artifact paths
+        run: |
+          ARTIFACTS_PATH=${{ env.BUILD_DIR }}/${{ env.PROJECT_NAME }}_artefacts/${{ env.BUILD_TYPE }}
+          echo "ARTIFACTS_PATH=$ARTIFACTS_PATH" >> $GITHUB_ENV
+          echo "VST3_PATH=$ARTIFACTS_PATH/VST3/${{ env.PRODUCT_NAME }}.vst3" >> $GITHUB_ENV
+          echo "ARTIFACT_NAME=${{ env.PRODUCT_NAME }}-${{ env.VERSION }}-Windows" >> $GITHUB_ENV
+
+      - name: Pluginval
+        run: |
+          curl -LO "https://github.com/Tracktion/pluginval/releases/download/v1.0.4/pluginval_Windows.zip"
+          7z x pluginval_Windows.zip
+          ./pluginval.exe --strictness-level 10 --verbose --validate "${{ env.VST3_PATH }}"
+
+      - name: Zip plugin
+        working-directory: ${{ env.ARTIFACTS_PATH }}
+        run: 7z a -tzip "${{ env.ARTIFACT_NAME }}.zip" VST3 Standalone/*.exe
+
+      - name: Upload zip
+        uses: actions/upload-artifact@v7
+        with:
+          name: ${{ env.ARTIFACT_NAME }}
+          path: "${{ env.ARTIFACTS_PATH }}/${{ env.ARTIFACT_NAME }}.zip"
