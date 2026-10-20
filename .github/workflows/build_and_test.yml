@@ -44,8 +44,12 @@ jobs:
       - name: Cache the build
         uses: mozilla-actions/sccache-action@v0.0.11
 
+      # MSVC (cl), the same compiler as local Visual Studio builds. The runner's
+      # clang-cl 20 clashes with the newer MSVC intrinsics headers when compiling
+      # JUCE's bundled libwebp ("'target' multiversioning cannot be combined with
+      # 'always_inline'"), so it isn't used here.
       - name: Configure
-        run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_C_COMPILER=clang-cl -DCMAKE_CXX_COMPILER=clang-cl -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache .
+        run: cmake -B ${{ env.BUILD_DIR }} -G Ninja -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }} -DCMAKE_C_COMPILER=cl -DCMAKE_CXX_COMPILER=cl -DCMAKE_C_COMPILER_LAUNCHER=sccache -DCMAKE_CXX_COMPILER_LAUNCHER=sccache .
 
       - name: Build
         run: cmake --build ${{ env.BUILD_DIR }} --config ${{ env.BUILD_TYPE }}

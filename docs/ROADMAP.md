@@ -181,6 +181,7 @@ Newest first. Add a row after each work session.
 
 | Date | Phase | What happened |
 | --- | --- | --- |
+| 2026-10-19 | 0 | CI fix: the Windows build had been failing since setup because the runner's clang-cl 20 clashes with newer MSVC intrinsics headers (libwebp in `juce_graphics`). CI now builds with MSVC `cl`, matching local builds. Release build verified locally: zero warnings, 3/3 tests. |
 | 2026-10-19 | 0 | Thomas added the gain parameter (APVTS, −48 to +12 dB, state save/restore) and a rotary knob laid out with `juce::Grid`. Debugged three runtime crashes on the way: unassigned `gainParameter` pointer, label attached to itself, mismatched parameter ID (`"VOL"` vs `"gain"`). Builds warning-free, 3/3 tests pass. Pushed for the first pluginval run in CI. |
 | 2026-10-19 | 0 | Shortwave loads in Reaper from `VST3-Dev`; saved `dev/shortwaveTest.rpp` and F5 in Visual Studio opens it with the debugger attached. Next: gain parameter + knob. |
 | 2026-10-19 | 0 | Moved to Claude Code. Installed VS Community 2026 (18.11, MSVC 19.51), CMake 4.4.4, Git 2.55, Reaper 7.82 via winget. Cloned to `%USERPROFILE%\Projects\shortwave` with submodules. First Windows Debug build: VST3 + Standalone built with zero warnings, VST3 copied to `VST3-Dev`, all 3 tests pass. `SHORTWAVE_DEBUG_HOST` found Reaper. Not yet opened in a host. |

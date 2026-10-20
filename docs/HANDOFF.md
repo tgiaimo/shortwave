@@ -24,7 +24,8 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 
 - JUCE 9 + Pamplejuce template, CMake, Visual Studio 2026, CMake 4.2+.
 - VST3 + Standalone only. CLAP removed for simplicity (parked).
-- CI trimmed to Windows only: build, Catch2 tests, pluginval, upload zip.
+- CI trimmed to Windows only: build (MSVC `cl` + Ninja, Release), Catch2
+  tests, pluginval, upload zip.
   macOS/Linux jobs, installer and code signing removed until Phase 6.
 - Intel IPP off.
 - After each build the VST3 is copied to `%USERPROFILE%\VST3-Dev` (the system
