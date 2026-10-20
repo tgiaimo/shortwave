@@ -56,8 +56,8 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
    Git 2.55, Reaper 7.82.
 4. ~~First build on Windows~~ — done: Debug build, zero warnings, 3/3 tests
    pass. Nothing Windows-specific needed fixing.
-5. Point Reaper and Ableton at `%USERPROFILE%\VST3-Dev`, save
-   `dev/ShortwaveTest.rpp`, re-run cmake, confirm F5 opens Reaper.
+5. ~~Point Reaper at `VST3-Dev`, save the .rpp, confirm F5 opens Reaper~~ —
+   done. (Ableton's VST3 custom folder still to set when first testing there.)
 6. Check the first GitHub Actions run passes.
 7. Then Phase 0's real milestone: Thomas adds a gain parameter + knob himself,
    with Claude guiding (AudioProcessorValueTreeState is the next concept).
