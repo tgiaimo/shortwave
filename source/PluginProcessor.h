@@ -3,7 +3,8 @@
 #include <juce_audio_processors/juce_audio_processors.h>
 
 #if (MSVC)
-#include "ipps.h"
+    #include "ipps.h"
+
 #endif
 
 class PluginProcessor : public juce::AudioProcessor
@@ -38,6 +39,18 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+    juce::AudioProcessorValueTreeState apvts;
+
 private:
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PluginProcessor)
+    static juce::AudioProcessorValueTreeState::ParameterLayout createParameters();
+
+    // Internal DSP lifecycle — called only from prepareToPlay / processBlock
+    void init();
+    void prepare (double sampleRate, int samplesPerBlock);
+    void update();
+
+
+    std::atomic<float>* gainParameter = nullptr;
+    juce::SmoothedValue<float, juce::ValueSmoothingTypes::Linear> gainSmoothed { 0.0f };
 };

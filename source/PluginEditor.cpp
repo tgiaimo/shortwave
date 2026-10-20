@@ -3,8 +3,19 @@
 PluginEditor::PluginEditor (PluginProcessor& p)
     : AudioProcessorEditor (&p), processorRef (p)
 {
-    juce::ignoreUnused (processorRef);
+    // gain slider
+    gainSlider = std::make_unique<juce::Slider> (juce::Slider::SliderStyle::RotaryVerticalDrag, juce::Slider::TextBoxBelow);
+    addAndMakeVisible (gainSlider.get());
 
+    // gain label
+    gainLabel = std::make_unique<juce::Label> ("", "gain");
+    addAndMakeVisible (gainLabel.get());
+    gainLabel->attachToComponent (gainSlider.get(), false);
+    gainLabel->setJustificationType (juce::Justification::centred);
+
+
+    gainAttachment = std::make_unique<Attachment> (processorRef.apvts, "gain", *gainSlider);
+    
     addAndMakeVisible (inspectButton);
 
     // this chunk of code instantiates and opens the melatonin inspector
@@ -20,7 +31,7 @@ PluginEditor::PluginEditor (PluginProcessor& p)
 
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (600, 400);
 }
 
 PluginEditor::~PluginEditor()
@@ -45,4 +56,33 @@ void PluginEditor::resized()
     auto area = getLocalBounds();
     area.removeFromBottom(50);
     inspectButton.setBounds (getLocalBounds().withSizeKeepingCentre(100, 50));
+    auto bounds = getLocalBounds();
+
+    // Give 40 pixels of space for the title
+    auto textBounds = bounds.removeFromTop (40);
+
+    // Give 40 pixels of margin on all sides so we don't paint to the edges of the background
+    bounds.reduce (40, 40);
+
+    juce::Grid grid;
+
+    // TrackInfo is a "space"
+    using Track = juce::Grid::TrackInfo;
+
+    // Fr is how big the space is relative to other spaces
+    using Fr = juce::Grid::Fr;
+
+    // 4 columns x 2 rows
+    grid.templateColumns = { Track (Fr (1)), Track (Fr (1)), Track (Fr (1)), Track (Fr (1)) };
+    grid.templateRows = { Track (Fr (1)), Track (Fr (1)) };
+
+    // Margin between each space
+    grid.rowGap = juce::Grid::Px (20);
+    grid.columnGap = juce::Grid::Px (20);
+
+    // Add components to the grid
+    grid.items.add (gainSlider.get());
+
+    // Perform the layout on the bounds
+    grid.performLayout (bounds);
 }

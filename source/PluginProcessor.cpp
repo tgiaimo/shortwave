@@ -2,16 +2,17 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-PluginProcessor::PluginProcessor()
-     : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
-                       .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
-                      #endif
-                       .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                     #endif
-                       )
+PluginProcessor::PluginProcessor():AudioProcessor (BusesProperties()
+    #if !JucePlugin_IsMidiEffect
+    #if !JucePlugin_IsSynth
+    .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+    #endif
+    .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+    #endif
+    ),
+    apvts (*this, nullptr, "Parameters", createParameters())
 {
+    gainParameter = apvts.getRawParameterValue ("gain");
 }
 
 PluginProcessor::~PluginProcessor()
@@ -26,29 +27,29 @@ const juce::String PluginProcessor::getName() const
 
 bool PluginProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
+#if JucePlugin_WantsMidiInput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PluginProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
+#if JucePlugin_ProducesMidiOutput
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 bool PluginProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     return true;
-   #else
+#else
     return false;
-   #endif
+#endif
 }
 
 double PluginProcessor::getTailLengthSeconds() const
@@ -58,8 +59,8 @@ double PluginProcessor::getTailLengthSeconds() const
 
 int PluginProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+    return 1; // NB: some hosts don't cope very well if you tell them there are 0 programs,
+    // so this should be at least 1, even if you're not really implementing programs.
 }
 
 int PluginProcessor::getCurrentProgram()
@@ -100,35 +101,37 @@ void PluginProcessor::releaseResources()
 
 bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
+#if JucePlugin_IsMidiEffect
     juce::ignoreUnused (layouts);
     return true;
-  #else
+#else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     if (layouts.getMainOutputChannelSet() != juce::AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
+        && layouts.getMainOutputChannelSet() != juce::AudioChannelSet::stereo())
         return false;
 
     // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
+    #if !JucePlugin_IsSynth
     if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
         return false;
-   #endif
+    #endif
 
     return true;
-  #endif
+#endif
 }
 
-void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer,
-                                              juce::MidiBuffer& midiMessages)
+void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
 
-    juce::ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    auto gainDb = gainParameter->load(); // read the current dB value
+    buffer.applyGain (juce::Decibels::decibelsToGain (gainDb));
 
+    juce::ScopedNoDenormals noDenormals;
+    auto totalNumInputChannels = getTotalNumInputChannels();
+    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -169,14 +172,38 @@ void PluginProcessor::getStateInformation (juce::MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
-    juce::ignoreUnused (destData);
+    juce::ValueTree copyState = apvts.copyState();
+
+    std::unique_ptr<juce::XmlElement> xml = copyState.createXml();
+
+    copyXmlToBinary (*xml, destData);
 }
 
 void PluginProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
-    juce::ignoreUnused (data, sizeInBytes);
+    std::unique_ptr<juce::XmlElement> xml = getXmlFromBinary (data, sizeInBytes);
+
+    if (xml != nullptr)
+    {
+        juce::ValueTree copyState = juce::ValueTree::fromXml (*xml);
+        if (copyState.isValid())
+            apvts.replaceState (copyState);
+    }
+}
+
+juce::AudioProcessorValueTreeState::ParameterLayout PluginProcessor::createParameters()
+{
+    // create the layout, add your gain parameter to it, return it
+    juce::AudioProcessorValueTreeState::ParameterLayout layout;
+    layout.add (std::make_unique<juce::AudioParameterFloat> (
+        juce::ParameterID { "gain", 1 }, // 1. ID + version
+        "gain", // 2. name shown in the DAW
+        juce::NormalisableRange<float> (-48.0f, 12.0f, 0.1f), // 3. range in dB
+        0.0f, // 4. default
+        juce::AudioParameterFloatAttributes().withLabel ("dB"))); // 5. unit label
+    return layout;
 }
 
 //==============================================================================
