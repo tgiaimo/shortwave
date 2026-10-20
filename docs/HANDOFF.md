@@ -59,8 +59,7 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
 5. ~~Point Reaper at `VST3-Dev`, save the .rpp, confirm F5 opens Reaper~~ —
    done. (Ableton's VST3 custom folder still to set when first testing there.)
 6. Check the first GitHub Actions run passes.
-7. Then Phase 0's real milestone: Thomas adds a gain parameter + knob himself,
-   with Claude guiding (AudioProcessorValueTreeState is the next concept).
+7. ~~Phase 0 milestone: gain parameter + knob~~ — done by Thomas.
 
 ## Suggested first message in Claude Code
 

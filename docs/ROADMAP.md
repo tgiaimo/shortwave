@@ -97,7 +97,7 @@ Milestone: a plugin with one gain knob loads in Reaper, and a breakpoint in
 - [x] Push to GitHub (github.com/tgiaimo/shortwave)
 - [x] Build Standalone + VST3 on the Windows PC; open in a host (Reaper)
 - [x] Wire Loop 2: save `dev/ShortwaveTest.rpp`, F5 launches Reaper
-- [ ] Add one gain parameter and knob (Thomas writes this)
+- [x] Add one gain parameter and knob (Thomas writes this)
 - [ ] Pass pluginval (runs automatically in GitHub Actions on every push)
 
 ### Phase 1 — Foundations
@@ -106,7 +106,7 @@ Milestone: parameters save and recall with the DAW project, change smoothly
 without clicks, and are covered by a unit test.
 
 - [ ] Learn the real-time rules: no memory allocation, locks, file or console I/O on the audio thread
-- [ ] Parameters via `AudioProcessorValueTreeState`; state save/restore
+- [x] Parameters via `AudioProcessorValueTreeState`; state save/restore (done early, with the Phase 0 gain knob)
 - [ ] Parameter smoothing to avoid zipper noise
 - [ ] Handle `prepareToPlay`: sample rate, block size, mono/stereo layouts
 - [ ] First Catch2 test (e.g. gain of 0 dB passes audio unchanged)
@@ -181,6 +181,7 @@ Newest first. Add a row after each work session.
 
 | Date | Phase | What happened |
 | --- | --- | --- |
+| 2026-10-19 | 0 | Thomas added the gain parameter (APVTS, −48 to +12 dB, state save/restore) and a rotary knob laid out with `juce::Grid`. Debugged three runtime crashes on the way: unassigned `gainParameter` pointer, label attached to itself, mismatched parameter ID (`"VOL"` vs `"gain"`). Builds warning-free, 3/3 tests pass. Pushed for the first pluginval run in CI. |
 | 2026-10-19 | 0 | Shortwave loads in Reaper from `VST3-Dev`; saved `dev/shortwaveTest.rpp` and F5 in Visual Studio opens it with the debugger attached. Next: gain parameter + knob. |
 | 2026-10-19 | 0 | Moved to Claude Code. Installed VS Community 2026 (18.11, MSVC 19.51), CMake 4.4.4, Git 2.55, Reaper 7.82 via winget. Cloned to `%USERPROFILE%\Projects\shortwave` with submodules. First Windows Debug build: VST3 + Standalone built with zero warnings, VST3 copied to `VST3-Dev`, all 3 tests pass. `SHORTWAVE_DEBUG_HOST` found Reaper. Not yet opened in a host. |
 | 2026-10-19 | 0 | Repo scaffolded from Pamplejuce (JUCE 9.0.5): renamed to Shortwave, VST3 + Standalone, VST3-Dev copy folder, F5-launches-Reaper debugging, Windows-only CI, setup guide. Built and all 3 tests passed (verified on Linux). Pushed to GitHub. |
