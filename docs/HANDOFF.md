@@ -59,7 +59,8 @@ delay, looper and maybe a sampler. Full plan in `docs/ROADMAP.md`.
    pass. Nothing Windows-specific needed fixing.
 5. ~~Point Reaper at `VST3-Dev`, save the .rpp, confirm F5 opens Reaper~~ —
    done. (Ableton's VST3 custom folder still to set when first testing there.)
-6. Check the first GitHub Actions run passes.
+6. ~~Check the first GitHub Actions run passes~~ — done: run #4 green after
+   switching CI to MSVC, pluginval passes.
 7. ~~Phase 0 milestone: gain parameter + knob~~ — done by Thomas.
 
 ## Suggested first message in Claude Code
