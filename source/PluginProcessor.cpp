@@ -2,15 +2,15 @@
 #include "PluginEditor.h"
 
 //==============================================================================
-PluginProcessor::PluginProcessor():AudioProcessor (BusesProperties()
-    #if !JucePlugin_IsMidiEffect
+PluginProcessor::PluginProcessor() : AudioProcessor (BusesProperties()
+#if !JucePlugin_IsMidiEffect
     #if !JucePlugin_IsSynth
-    .withInput ("Input", juce::AudioChannelSet::stereo(), true)
+                                             .withInput ("Input", juce::AudioChannelSet::stereo(), true)
     #endif
-    .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-    #endif
-    ),
-    apvts (*this, nullptr, "Parameters", createParameters())
+                                             .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
+#endif
+                                             ),
+                                     apvts (*this, nullptr, "Parameters", createParameters())
 {
     gainParameter = apvts.getRawParameterValue ("gain");
 }
@@ -91,6 +91,9 @@ void PluginProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
     juce::ignoreUnused (sampleRate, samplesPerBlock);
+    
+    gainSmoothed.reset (sampleRate, 0.02);
+    gainSmoothed.setCurrentAndTargetValue (juce::Decibels::decibelsToGain (gainParameter->load()));
 }
 
 void PluginProcessor::releaseResources()
@@ -124,14 +127,11 @@ bool PluginProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     juce::ignoreUnused (midiMessages);
-
-    auto gainDb = gainParameter->load(); // read the current dB value
-    buffer.applyGain (juce::Decibels::decibelsToGain (gainDb));
-
     juce::ScopedNoDenormals noDenormals;
+
     auto totalNumInputChannels = getTotalNumInputChannels();
     auto totalNumOutputChannels = getTotalNumOutputChannels();
-    
+    auto numSamples = buffer.getNumSamples();
     // In case we have more outputs than inputs, this code clears any output
     // channels that didn't contain input data, (because these aren't
     // guaranteed to be empty - they may contain garbage).
@@ -139,7 +139,10 @@ void PluginProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     // when they first compile a plugin, but obviously you don't need to keep
     // this code if your algorithm always overwrites all the output channels.
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+        buffer.clear (i, 0, numSamples);
+
+    gainSmoothed.setTargetValue (juce::Decibels::decibelsToGain (gainParameter->load()));
+    gainSmoothed.applyGain (buffer, numSamples);
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
